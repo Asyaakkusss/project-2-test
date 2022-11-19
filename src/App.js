@@ -386,7 +386,7 @@ export default function App() {
             <Button
               onClick={() => {
                 updateSubmit();
-                handleClickClosed();
+                //handleClickClosed();
                 //setIsEditing(true);
                 //handleClickClosed();
                 //submit();
