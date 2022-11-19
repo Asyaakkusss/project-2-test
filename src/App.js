@@ -15,6 +15,7 @@ import TableCell from '@mui/material/TableCell';
 import MenuIcon from '@mui/icons-material/Menu';
 import DoNotDisturbAltRoundedIcon from '@mui/icons-material/DoNotDisturbAltRounded';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import EditRoundedIcon from '@mui/icons-material/EditRounded';
 import CardContent from '@mui/material/CardContent';
 import Dialog from '@mui/material/Dialog';
 import DialogContentText from '@mui/material/DialogContentText';
@@ -28,7 +29,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import AdapterMoment from '@mui/lab/AdapterMoment';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import DatePicker from '@mui/lab/DatePicker';
-import Snackbar from '@mui/material/Snackbar';
+import 'toastr/build/toastr.min.css';
 
 //js libraries
 import moment from 'moment';
@@ -56,36 +57,34 @@ export default function App() {
   let [date, setDate] = React.useState('');
   let [isEditing, setIsEditing] = React.useState(false);
 
+  //opens dialog
   const handleClickOpen = () => {
     setOpen(true);
-    //setIsEditing(false);
-  };
-  const handleClickUpdateOpen = () => {
-    setUpdateOpen(true);
-    // setIsEditing(true);
   };
 
+  //closes dialog
   const handleClickClosed = () => {
     setOpen(false);
   };
-  const handleClickUpdateClosed = () => {
-    setUpdateOpen(false);
-  };
 
+  //change title on dialog
   let changeTitle = (value) => {
     setTitle(value);
     validateTitle(value);
   };
 
+  //change description on dialog
   let changeDescription = (value) => {
     setDescription(value);
     validateDescription(value);
   };
 
+  //change deadline on dialog
   function changeDeadline(value) {
     setDeadline(value);
   }
 
+  //allows checkbox to check and uncheck at specific index
   let changeCheckbox = (index) => {
     // figure out which data/ task has the index
     let desiredTaskArrayId = -1;
@@ -103,11 +102,10 @@ export default function App() {
         !array[desiredTaskArrayId].isComplete;
       return newTaskArray;
     });
-    // showButton(false);
   };
 
+  //submit for add function
   let submit = () => {
-    //setIsEditing(false);
     if (validateTitle(title) || validateDescription(description)) {
       toastr.error(`Could not submit form!`, ``, {
         positionClass: 'toast-bottom-right',
@@ -119,8 +117,8 @@ export default function App() {
     //thingie();
   };
 
+  //submit for update function
   let updateSubmit = () => {
-    //setIsEditing(true);
     if (validateDescription(description)) {
       toastr.error(`Could not submit form!`, ``, {
         positionClass: 'toast-bottom-right',
@@ -129,28 +127,24 @@ export default function App() {
     }
     addTasks();
     handleClickClosed();
-    //thingie();
   };
 
   function addTask() {
     setIndex(taskArray.length);
     setAdding(true);
   }
+
   //update a task
   function updateTasks(index) {
-    // setIsEditing(true);
     let desiredTaskArrayId = -1;
     for (let i = 0; i < taskArray.length && desiredTaskArrayId === -1; i++) {
       if (taskArray[i].index === index) {
-        // taskArray[i] is the task that you want to update isComplete
+        // taskArray[i] is the task that you want to update
         desiredTaskArrayId = i;
       }
     }
     index = desiredTaskArrayId;
     let daData = taskArray[index];
-    //console.log(data);
-    //taskArray.push(data);
-    //setIndex(data.index);
     setAdding(false);
     setDescription(daData.description);
     setTitle(daData.title);
@@ -163,6 +157,7 @@ export default function App() {
     });
   }
 
+  //clears the dialog if the user puts something in but then hits cancel
   const clearCancel = () => {
     let data = {
       title,
@@ -178,11 +173,12 @@ export default function App() {
     setDeadline('');
   };
 
+  //deletes a take at a specific index
   const deleteTasks = (index) => {
     let desiredTaskArrayId = -1;
     for (let i = 0; i < taskArray.length && desiredTaskArrayId === -1; i++) {
       if (taskArray[i].index === index) {
-        // taskArray[i] is the task that you want to update isComplete
+        // taskArray[i] is the task that you want to delete
         desiredTaskArrayId = i;
       }
     }
@@ -192,13 +188,12 @@ export default function App() {
       setTaskArray([...newTaskArray]);
       return newTaskArray;
     });
-    //let reducedTaskArray = [...taskArray];
-
     toastr.success(`Task deleted successfully!`, ``, {
       positionClass: 'toast-bottom-right',
     });
   };
 
+  //function that adds tasks
   function addTasks() {
     let data = {
       title,
@@ -214,8 +209,6 @@ export default function App() {
     } else {
       taskArray[index] = data;
     }
-    //console.log(data);
-    //taskArray.push(data);
     setIndex(taskArray.length);
     setDescription('');
     setTitle('');
@@ -224,10 +217,9 @@ export default function App() {
     toastr.success(`Task added successfully!`, ``, {
       positionClass: 'toast-bottom-right',
     });
-    //console.log(taskArray);
-    //setTaTsetState({ row: result });
   }
 
+  //validates title and makes sure it is unique and present
   let validateTitle = (value) => {
     setError(false);
     let errors = [];
@@ -246,6 +238,7 @@ export default function App() {
     return results;
   };
 
+  //validates description and makes sure it is present
   let validateDescription = (value) => {
     setError(false);
     let errors = [];
@@ -258,15 +251,18 @@ export default function App() {
     return results;
   };
 
+  //return function that creates the grid and tasks
   return (
     <>
       <Dialog open={open} onClose={handleClickClosed}>
         {isEditing ? (
           <DialogTitle sx={{ bgcolor: 'primary.dark', color: 'white' }}>
+            <EditRoundedIcon />
             Edit Task
           </DialogTitle>
         ) : (
           <DialogTitle sx={{ bgcolor: 'primary.dark', color: 'white' }}>
+            <AddCircleIcon />
             Add Task
           </DialogTitle>
         )}
@@ -321,9 +317,7 @@ export default function App() {
               <DatePicker
                 label="Deadline"
                 value={deadline}
-                onChange={(e) => {
-                  //updateDate(e);
-                }}
+                onChange={(e) => {}}
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>
@@ -388,9 +382,7 @@ export default function App() {
               <DatePicker
                 label="Deadline"
                 value={deadline}
-                onChange={(e) => {
-                  //updateDate(e);
-                }}
+                onChange={(e) => {}}
                 renderInput={(params) => <TextField {...params} />}
               />
             </LocalizationProvider>
@@ -401,24 +393,19 @@ export default function App() {
             <Button
               onClick={() => {
                 updateSubmit();
-                //handleClickClosed();
-                //setIsEditing(true);
-                //handleClickClosed();
-                //submit();
               }}
               variant="contained"
               sx={{ width: 100 }}
               autoFocus
             >
+              <EditRoundedIcon />
               Edit
             </Button>
 
             <Button
               onClick={handleClickClosed}
               onClick={() => {
-                //clearCancel();
                 handleClickClosed();
-                //submit();
               }}
               variant="contained"
               sx={{ bgcolor: 'red', width: 100 }}
@@ -433,13 +420,12 @@ export default function App() {
             <Button
               onClick={() => {
                 submit();
-                //handleClickClosed();
-                //submit();
               }}
               variant="contained"
               sx={{ width: 100 }}
               autoFocus
             >
+              <AddCircleIcon />
               Add
             </Button>
 
@@ -447,7 +433,6 @@ export default function App() {
               onClick={() => {
                 clearCancel();
                 handleClickClosed();
-                //submit();
               }}
               variant="contained"
               sx={{ bgcolor: 'red', width: 100 }}
@@ -477,7 +462,6 @@ export default function App() {
                 onClick={() => {
                   handleClickOpen();
                   setIsEditing(false);
-                  //addTasks();
                 }}
                 sx={{ width: 100, marginRight: '7px' }}
               >
@@ -549,7 +533,6 @@ export default function App() {
                             <Button
                               variant="contained"
                               onClick={() => {
-                                //error = { error };
                                 updateTasks(data.index);
                                 handleClickOpen();
                                 setIsEditing(true);
@@ -557,7 +540,7 @@ export default function App() {
                               sx={{ width: 100 }}
                               id="update"
                             >
-                              <i className="fa fa-fw fa-edit"></i>
+                              <EditRoundedIcon />
                               &nbsp;Update
                             </Button>
                           </div>
@@ -572,7 +555,7 @@ export default function App() {
                             onClick={() => deleteTasks(data.index)}
                             sx={{ bgcolor: '#f44336', width: 100 }}
                           >
-                            <i className="fa fa-fw fa-times-circle"></i>
+                            <DoNotDisturbAltRoundedIcon />
                             &nbsp;Delete
                           </Button>
                         </div>
