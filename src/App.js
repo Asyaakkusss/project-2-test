@@ -163,6 +163,21 @@ export default function App() {
     });
   }
 
+  const clearCancel = () => {
+    let data = {
+      title,
+      description,
+      deadline,
+      priority,
+      isComplete: false,
+      index,
+    };
+    setDescription('');
+    setTitle('');
+    setPriority('');
+    setDeadline('');
+  };
+
   const deleteTasks = (index) => {
     let desiredTaskArrayId = -1;
     for (let i = 0; i < taskArray.length && desiredTaskArrayId === -1; i++) {
@@ -400,6 +415,11 @@ export default function App() {
 
             <Button
               onClick={handleClickClosed}
+              onClick={() => {
+                //clearCancel();
+                handleClickClosed();
+                //submit();
+              }}
               variant="contained"
               sx={{ bgcolor: 'red', width: 100 }}
               autoFocus
@@ -424,7 +444,11 @@ export default function App() {
             </Button>
 
             <Button
-              onClick={handleClickClosed}
+              onClick={() => {
+                clearCancel();
+                handleClickClosed();
+                //submit();
+              }}
               variant="contained"
               sx={{ bgcolor: 'red', width: 100 }}
               autoFocus
